@@ -1,0 +1,21 @@
+{
+  "name": "7csn/reactor-select",
+  "description": "基于 pcntl 扩展的事件反应器",
+  "type": "library",
+  "require": {
+    "ext-pcntl": "*",
+    "7csn/chaser-reactor": "dev-master"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "7csn",
+      "email": "1479672753@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "chaser\\reactor\\": ""
+    }
+  }
+}
