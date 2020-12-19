@@ -3,6 +3,7 @@
   "description": "基于 pcntl 扩展的事件反应器",
   "type": "library",
   "require": {
+    "php": ">=7.4.0",
     "ext-pcntl": "*",
     "7csn/chaser-reactor": "dev-master"
   },
