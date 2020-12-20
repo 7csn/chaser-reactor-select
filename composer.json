@@ -5,7 +5,7 @@
   "require": {
     "php": ">=7.4.0",
     "ext-pcntl": "*",
-    "7csn/chaser-reactor": "dev-master"
+    "7csn/reactor": "dev-master"
   },
   "license": "MIT",
   "authors": [
