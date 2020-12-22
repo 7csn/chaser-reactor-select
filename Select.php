@@ -199,7 +199,7 @@ class Select extends ReactorAbstract
 
             // 查看最前闹铃
             $data = $this->scheduler->top();
-            [$flag, $timerId] = $data['data'];
+            [$timerId, $flag] = $data['data'];
             $nextRuntime = -$data['priority'];
 
             // 计算剩余时间
