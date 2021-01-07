@@ -10,7 +10,7 @@ use Throwable;
  *
  * @package chaser\reactor
  */
-class Select extends ReactorAbstract
+class Select extends Reactor
 {
     /**
      * 流事件默认等待时间（微秒）
@@ -149,9 +149,9 @@ class Select extends ReactorAbstract
     }
 
     /**
-     * 主回路
+     * @inheritDoc
      */
-    public function loop()
+    public function loop(): void
     {
         $this->break = false;
 
@@ -285,9 +285,9 @@ class Select extends ReactorAbstract
     }
 
     /**
-     * 破坏回路
+     * @inheritDoc
      */
-    public function destroy()
+    public function destroy(): void
     {
         $this->break = true;
     }
