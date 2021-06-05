@@ -75,7 +75,6 @@ class Select extends Reactor
 
             if ($reads || $writes) {
                 // 等待流读写事件，被信号打断警告并返回 false
-                $excepts = null;
                 $fdEventCount = @stream_select($reads, $writes, $excepts, 0, $this->selectTimeout);
             } else {
                 usleep($this->selectTimeout);
@@ -124,7 +123,6 @@ class Select extends Reactor
     protected function makeReadData(int $intFd, $fd, callable $callback): callable
     {
         $this->readFds[$intFd] = $fd;
-//        $this->fds[self::EV_READ][$intFd] = $fd;
         return $callback;
     }
 
@@ -136,7 +134,6 @@ class Select extends Reactor
     protected function makeWriteData(int $intFd, $fd, callable $callback): callable
     {
         $this->writeFds[$intFd] = $fd;
-//        $this->fds[self::EV_WRITE][$intFd] = $fd;
         return $callback;
     }
 
