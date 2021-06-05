@@ -74,24 +74,28 @@ class Select extends Reactor
             $writes = $this->writeFds;
 
             if ($reads || $writes) {
+                // 等待流读写事件，被信号打断警告并返回 false
                 $excepts = null;
-                // 等待事件发生：可读、可写、带外数据、信号
-                $amount = stream_select($reads, $writes, $excepts, 0, $this->selectTimeout);
-                if ($amount) {
-                    // 事件侦听回调
-                    foreach ($reads as $read) {
-                        $this->readCallback($read);
-                    }
-                    foreach ($writes as $write) {
-                        $this->writeCallback($write);
-                    }
-                }
+                $fdEventCount = @stream_select($reads, $writes, $excepts, 0, $this->selectTimeout);
             } else {
                 usleep($this->selectTimeout);
+                $fdEventCount = false;
             }
 
-            // 闹钟走时
-            $this->tick();
+            // 若有定时器，检测是否触发
+            if (!$this->scheduler->isEmpty()) {
+                $this->tick();
+            }
+
+            // 资源句柄读写回调
+            if ($fdEventCount) {
+                foreach ($reads as $read) {
+                    $this->readCallback($read);
+                }
+                foreach ($writes as $write) {
+                    $this->writeCallback($write);
+                }
+            }
         }
     }
 
@@ -216,8 +220,7 @@ class Select extends Reactor
      */
     private function tick(): void
     {
-        while (!$this->scheduler->isEmpty()) {
-
+        do {
             // 查看最前闹铃
             $data = $this->scheduler->top();
             [$timerId, $flag] = $data['data'];
@@ -227,18 +230,17 @@ class Select extends Reactor
             $now = microtime(true);
             $leftTime = $nextRuntime - $now;
 
-            // 闹铃未响，则设置流事件等待时间
+            // 闹铃未响，则重置等待时间
             if ($leftTime > 0) {
                 $this->selectTimeout = min($leftTime * 1000000, self::SELECT_TIMEOUT);
                 return;
             }
 
-            // 闹铃生效，清出队列
+            // 闹铃响起，清出队列；闹铃回调处理
             $this->scheduler->extract();
-
-            // 闹铃触发
             $this->timerCallback($timerId, $flag, $now);
-        }
+
+        } while (!$this->scheduler->isEmpty());
 
         // 无定时器，重置流事件等待时间
         $this->selectTimeout = self::SELECT_TIMEOUT;
